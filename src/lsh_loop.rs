@@ -24,7 +24,7 @@ impl LshLoop {
                 .map(|s| s.to_string())
                 .collect::<Vec<_>>();
 
-            match execute(args) {
+            match lsh_execute(args) {
                 Ok(status) => match status {
                     Status::Success => continue,
                     Status::NoCommand => continue,

@@ -36,7 +36,7 @@ impl fmt::Display for Commands {
     }
 }
 
-pub fn execute(args: Vec<String>) -> Result<Status, LshError> {
+pub fn lsh_execute(args: Vec<String>) -> Result<Status, LshError> {
     if args.is_empty() {
         return Ok(Status::NoCommand);
     }
