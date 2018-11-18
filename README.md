@@ -1,2 +1,5 @@
 # lsh_rust
-lsh implemented with Rust
+## Description
+*lsh*(https://github.com/brenns10/lsh) implemented with Rust
+
+
