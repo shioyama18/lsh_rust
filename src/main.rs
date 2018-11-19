@@ -1,11 +1,10 @@
-extern crate lsh_rust;
-
-use lsh_rust::lsh_loop::*;
+extern crate rsh;
+use rsh::rsh_loop::*;
 
 fn main() {
-    let lsh_loop = LshLoop::new();
+    let rsh_loop = RshLoop::new();
 
-    match lsh_loop.start() {
+    match rsh_loop.start() {
         Ok(_) => println!("Exited successfully."),
         Err(e) => eprintln!("{}", e),
     }

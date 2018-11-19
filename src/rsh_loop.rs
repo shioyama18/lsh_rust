@@ -1,19 +1,19 @@
 use status::Status;
-use error::LshError;
+use error::RshError;
 use command::*;
 use std::io::{self, Write};
 
 
-pub struct LshLoop;
+pub struct RshLoop;
 
-impl LshLoop {
+impl RshLoop {
     pub fn new() -> Self {
-        LshLoop
+        RshLoop
     }
 
-    pub fn start(&self) -> Result<Status, LshError> {
+    pub fn start(&self) -> Result<Status, RshError> {
         loop {
-            print!("> ");
+            print!("$ ");
             io::stdout().flush().unwrap();
 
             let mut input = String::new();
@@ -24,7 +24,7 @@ impl LshLoop {
                 .map(|s| s.to_string())
                 .collect::<Vec<_>>();
 
-            match lsh_execute(args) {
+            match rsh_execute(args) {
                 Ok(status) => match status {
                     Status::Success => continue,
                     Status::NoCommand => continue,

@@ -18,7 +18,7 @@ pub enum Commands {
 }
 
 impl FromStr for Commands {
-    type Err = LshError;
+    type Err = RshError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
@@ -36,54 +36,54 @@ impl fmt::Display for Commands {
     }
 }
 
-pub fn lsh_execute(args: Vec<String>) -> Result<Status, LshError> {
+pub fn rsh_execute(args: Vec<String>) -> Result<Status, RshError> {
     if args.is_empty() {
         return Ok(Status::NoCommand);
     }
 
     Commands::from_str(&args[0])
         .and_then(|c| match c {
-            Commands::Cd      => lsh_cd(args),
-            Commands::Help    => lsh_help(),
-            Commands::Exit    => lsh_exit(),
-            Commands::Execute => lsh_spawn(args),
+            Commands::Cd      => rsh_cd(args),
+            Commands::Help    => rsh_help(),
+            Commands::Exit    => rsh_exit(),
+            Commands::Execute => rsh_spawn(args),
         })
 }
 
-fn lsh_cd(arg: Vec<String>) -> Result<Status, LshError> {
+fn rsh_cd(arg: Vec<String>) -> Result<Status, RshError> {
     if arg.len() == 1 {
-        return Err(LshError::CommandError("lsh: expected argument to \"cd\"".to_string()));
+        return Err(RshError::CommandError("rsh: expected argument to \"cd\"".to_string()));
     } else {
         let path = Path::new(&arg[1]);
         chdir(path)
             .map(|_| Status::Success)
-            .map_err(|e| LshError::CommandError(e.to_string()))
+            .map_err(|e| RshError::CommandError(e.to_string()))
     }
 }
 
-fn lsh_help() -> Result<Status, LshError> {
+fn rsh_help() -> Result<Status, RshError> {
     println!("Type program names and arguments, and hit enter.");
     println!("The following are build in: ");
     BUILTINS.iter().for_each(|c| println!("  {}", c));
     Ok(Status::Success)
 }
 
-fn lsh_exit() -> Result<Status, LshError> {
+fn rsh_exit() -> Result<Status, RshError> {
     Ok(Status::Exit)
 } 
 
-fn lsh_spawn(args: Vec<String>) -> Result<Status, LshError> {
-    let pid = fork().map_err(|e| LshError::ForkError(e.to_string()))?;
+fn rsh_spawn(args: Vec<String>) -> Result<Status, RshError> {
+    let pid = fork().map_err(|e| RshError::ForkError(e.to_string()))?;
 
     match pid {
         ForkResult::Parent { child } => {
             let wpid = waitpid(child, None)
-                .map_err(|e| LshError::ParentError(e.to_string()));
+                .map_err(|e| RshError::ParentError(e.to_string()));
             
             match wpid {
                 Ok(WaitStatus::Exited(_, _))      => Ok(Status::Success),
                 Ok(WaitStatus::Signaled(_, _, _)) => Ok(Status::Success),
-                Err(e)                            => Err(LshError::ParentError(e.to_string())),
+                Err(e)                            => Err(RshError::ParentError(e.to_string())),
                 _                                 => Ok(Status::Success),
             }
         }
@@ -94,7 +94,7 @@ fn lsh_spawn(args: Vec<String>) -> Result<Status, LshError> {
 
             execvp(&cmd[0], &cmd)
                 .map(|_| Status::Success)
-                .map_err(|e| LshError::ChildError(e.to_string()))
+                .map_err(|e| RshError::ChildError(e.to_string()))
         }
     }
 }
